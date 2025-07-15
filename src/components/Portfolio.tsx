@@ -10,7 +10,7 @@ interface Section {
 const Portfolio: React.FC = () => {
   const [activeSection, setActiveSection] = useState<string>('about');
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
-  const [profileImage, setProfileImage] = useState<string>('/profile-photo.jpg');
+  const [profileImage] = useState<string>('/profile-photo.jpg');
   const [isImageZoomed, setIsImageZoomed] = useState<boolean>(false);
   const [zoomedSocial, setZoomedSocial] = useState<string | null>(null);
 
@@ -29,7 +29,7 @@ const Portfolio: React.FC = () => {
     {
       name: 'GitHub',
       icon: Github,
-      url: 'https://github.com/BabyKimura',
+      url: 'https://github.com/KevenRoyEdis',
       color: 'hover:text-gray-800'
     },
     {
@@ -192,7 +192,7 @@ const Portfolio: React.FC = () => {
             </div>
             <div className="flex items-center text-gray-600">
               <Mail className="mr-3 text-blue-500" size={20} />
-              <span>kevenroy.edis@gmail.com</span>
+              <span>kevenroy.edis17@gmail.com</span>
             </div>
           </div>
           <div className="space-y-4">
