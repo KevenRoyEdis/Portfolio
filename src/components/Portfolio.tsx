@@ -13,9 +13,22 @@ const Portfolio: React.FC = () => {
   const [profileImage] = useState<string>('/profile-photo.jpg');
   const [isImageZoomed, setIsImageZoomed] = useState<boolean>(false);
   const [zoomedSocial, setZoomedSocial] = useState<string | null>(null);
+  const [isMobile, setIsMobile] = useState<boolean>(false);
 
   useEffect(() => {
     setIsLoaded(true);
+    
+    // Detect mobile devices
+    const checkMobile = () => {
+      const userAgent = navigator.userAgent || navigator.vendor || (window as any).opera;
+      const isMobileDevice = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent.toLowerCase());
+      setIsMobile(isMobileDevice);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
   // Social media links
@@ -335,16 +348,66 @@ const Portfolio: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
-      {/* Navigation */}
-      <nav className="sticky top-0 z-40 bg-white shadow-lg">
-        <div className="max-w-6xl px-4 mx-auto">
-          <div className="flex items-center justify-between py-4">
-            <div className="flex items-center">
+      {/* Desktop Navigation */}
+      {!isMobile && (
+        <nav className="sticky top-0 z-40 bg-white shadow-lg">
+          <div className="max-w-6xl px-4 mx-auto">
+            <div className="flex items-center justify-between py-4">
+              <div className="flex items-center">
+                {profileImage ? (
+                  <img 
+                    src={profileImage} 
+                    alt="Keven Roy C. Edis" 
+                    className="object-cover w-12 h-12 mr-3 transition-all duration-300 transform border-2 border-blue-200 rounded-full cursor-pointer hover:shadow-lg hover:scale-105"
+                    onClick={handleImageClick}
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.style.display = 'none';
+                      target.nextElementSibling?.classList.remove('hidden');
+                    }}
+                  />
+                ) : null}
+                <div 
+                  className={`w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold mr-3 cursor-pointer hover:shadow-lg transition-all duration-300 transform hover:scale-105 ${profileImage ? 'hidden' : ''}`}
+                  onClick={handleImageClick}
+                >
+                  KE
+                </div>
+                <h1 className="text-2xl font-bold text-gray-800">Keven Roy C. Edis</h1>
+              </div>
+              
+              <div className="flex space-x-1">
+                {navigationSections.map(({ id, label, icon: Icon }) => (
+                  <button
+                    key={id}
+                    onClick={() => handleSectionClick(id)}
+                    className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 transform hover:scale-105 active:scale-95 flex items-center space-x-2 ${
+                      activeSection === id
+                        ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
+                        : 'text-gray-600 hover:bg-gray-100'
+                    }`}
+                  >
+                    <Icon size={18} />
+                    <span className="hidden sm:inline">{label}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </nav>
+      )}
+
+      {/* Mobile Layout */}
+      {isMobile ? (
+        <div className="flex min-h-screen">
+          {/* Left Sidebar Navigation for Mobile */}
+          <div className="fixed top-0 left-0 z-40 flex flex-col items-center w-20 h-full py-6 bg-white shadow-lg">
+            <div className="mb-8">
               {profileImage ? (
                 <img 
                   src={profileImage} 
                   alt="Keven Roy C. Edis" 
-                  className="object-cover w-12 h-12 mr-3 transition-all duration-300 transform border-2 border-blue-200 rounded-full cursor-pointer hover:shadow-lg hover:scale-105"
+                  className="object-cover w-12 h-12 transition-all duration-300 transform border-2 border-blue-200 rounded-full cursor-pointer hover:shadow-lg hover:scale-105"
                   onClick={handleImageClick}
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
@@ -354,74 +417,83 @@ const Portfolio: React.FC = () => {
                 />
               ) : null}
               <div 
-                className={`w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold mr-3 cursor-pointer hover:shadow-lg transition-all duration-300 transform hover:scale-105 ${profileImage ? 'hidden' : ''}`}
+                className={`w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold cursor-pointer hover:shadow-lg transition-all duration-300 transform hover:scale-105 ${profileImage ? 'hidden' : ''}`}
                 onClick={handleImageClick}
               >
                 KE
               </div>
-              <h1 className="text-2xl font-bold text-gray-800">Keven Roy C. Edis</h1>
             </div>
             
-            <div className="flex space-x-1">
+            <div className="flex flex-col flex-1 space-y-4">
               {navigationSections.map(({ id, label, icon: Icon }) => (
                 <button
                   key={id}
                   onClick={() => handleSectionClick(id)}
-                  className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 transform hover:scale-105 active:scale-95 flex items-center space-x-2 ${
+                  className={`p-3 rounded-lg font-medium transition-all duration-300 transform hover:scale-105 active:scale-95 flex flex-col items-center space-y-1 ${
                     activeSection === id
                       ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
                       : 'text-gray-600 hover:bg-gray-100'
                   }`}
+                  title={label}
                 >
-                  <Icon size={18} />
-                  <span className="hidden sm:inline">{label}</span>
+                  <Icon size={20} />
+                  <span className="text-xs">{label}</span>
                 </button>
               ))}
             </div>
           </div>
-        </div>
-      </nav>
 
-      {/* Main Content */}
-      <main className="max-w-6xl px-4 py-8 mx-auto">
-        {renderContent()}
-      </main>
-
-      {/* Footer */}
-      <footer className="py-8 text-white bg-gray-800">
-        <div className="max-w-6xl px-4 mx-auto text-center">
-          <div className="flex justify-center mb-4 space-x-6">
-            <div className="flex items-center">
-              <Phone className="mr-2" size={18} />
-              <span>09383150900</span>
-            </div>
-            <div className="flex items-center">
-              <Mail className="mr-2" size={18} />
-              <span>kevenroy.edis@gmail.com</span>
-            </div>
-            <div className="flex items-center">
-              <MapPin className="mr-2" size={18} />
-              <span>Kidapawan City</span>
-            </div>
+          {/* Main Content for Mobile */}
+          <div className="flex-1 ml-20">
+            <main className="px-4 py-8">
+              {renderContent()}
+            </main>
           </div>
-          
-          {/* Footer Social Links */}
-          <div className="flex justify-center mb-4 space-x-4">
-            {socialLinks.map((social) => (
-              <button
-                key={social.name}
-                onClick={(e) => handleSocialClick(e, social.name, social.url)}
-                className="p-2 text-gray-300 transition-all duration-300 transform bg-gray-700 rounded-full hover:bg-gray-600 hover:text-white hover:scale-110"
-                title={social.name}
-              >
-                <social.icon size={18} />
-              </button>
-            ))}
-          </div>
-          
-          <p className="text-gray-400">© 2025 Keven Roy C. Edis. All rights reserved.</p>
         </div>
-      </footer>
+      ) : (
+        /* Desktop Layout */
+        <main className="max-w-6xl px-4 py-8 mx-auto">
+          {renderContent()}
+        </main>
+      )}
+
+      {/* Footer - Hidden on Mobile */}
+      {!isMobile && (
+        <footer className="py-8 text-white bg-gray-800">
+          <div className="max-w-6xl px-4 mx-auto text-center">
+            <div className="flex justify-center mb-4 space-x-6">
+              <div className="flex items-center">
+                <Phone className="mr-2" size={18} />
+                <span>09383150900</span>
+              </div>
+              <div className="flex items-center">
+                <Mail className="mr-2" size={18} />
+                <span>kevenroy.edis17@gmail.com</span>
+              </div>
+              <div className="flex items-center">
+                <MapPin className="mr-2" size={18} />
+                <span>Kidapawan City</span>
+              </div>
+            </div>
+            
+            {/* Footer Social Links */}
+            <div className="flex justify-center mb-4 space-x-4">
+              {socialLinks.map((social) => (
+                <button
+                  key={social.name}
+                  onClick={(e) => handleSocialClick(e, social.name, social.url)}
+                  className="p-2 text-gray-300 transition-all duration-300 transform bg-gray-700 rounded-full hover:bg-gray-600 hover:text-white hover:scale-110"
+                  title={social.name}
+                >
+                  <social.icon size={18} />
+                </button>
+              ))}
+            </div>
+            
+            <p className="text-gray-400">© 2025 Keven Roy C. Edis. All rights reserved.</p>
+          </div>
+        </footer>
+      )}
 
       {/* Floating Animation Elements */}
       <div className="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
